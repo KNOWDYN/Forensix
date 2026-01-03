@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliometric Auditor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white h-screen flex flex-col items-center justify-center">
+    <div class="w-full max-w-2xl text-center px-4">
+        <h1 class="text-6xl font-bold mb-8"><span class="text-blue-600">O</span><span class="text-red-500">R</span><span class="text-yellow-500">C</span><span class="text-blue-600">I</span><span class="text-green-500">D</span><span class="text-gray-600"> Audit</span></h1>
+        
+        <div class="relative">
+            <input type="text" id="orcid" placeholder="Enter Researcher ORCID (e.g. 0000-0003-4273-8487)" 
+                class="w-full border border-gray-200 hover:shadow-lg focus:shadow-lg focus:outline-none rounded-full px-6 py-4 text-lg transition shadow-sm">
+        </div>
+
+        <div class="mt-8 space-x-4">
+            <button onclick="investigate()" class="bg-gray-50 hover:border-gray-300 border border-transparent text-gray-700 px-6 py-2 rounded text-sm font-medium">Investigate Researcher</button>
+            <button class="bg-gray-50 border border-transparent text-gray-700 px-6 py-2 rounded text-sm font-medium">I'm Feeling Lucky</button>
+        </div>
+    </div>
+
+    <script>
+        async function investigate() {
+            const orcid = document.getElementById('orcid').value;
+            if(!orcid) return alert("Please enter an ORCID");
+            
+            const btn = event.target;
+            btn.innerText = "Processing Trace...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/investigate?orcid=${orcid}`);
+                const html = await response.text();
+                
+                const newTab = window.open();
+                newTab.document.write(html);
+                newTab.document.close();
+            } catch (err) {
+                alert("Error or Timeout. High-volume authors may require the Pro version.");
+            } finally {
+                btn.innerText = "Investigate Researcher";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
